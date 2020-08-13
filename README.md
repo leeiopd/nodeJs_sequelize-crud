@@ -4,9 +4,13 @@
   - Sequelize : ORM(Object-Relational Mapping)
   - Nodejs 로 mySql또는 postgreSql (db) 를 제어
 
+
+
 - dotenv
   - 환경변수 설정들을 저장하고 관리
   - dotenv pakage 설치 후, process.env로 접근 가능
+
+
 
 - mysql 설정 / Database 생성
 
@@ -22,6 +26,8 @@
   # 테이블 확인
   show databases
   ```
+
+
 
 * Database 접속
 
@@ -70,3 +76,46 @@
     ```
 
     
+
+* DB write/read
+
+  * Read
+
+    * /controllers/admin/admin.ctrl.js
+
+      ```javascript
+      exports.post_products_write = ( req , res ) => {
+          // res.send(req.body);  
+        models.Products.create(req.body).then(()=>{
+              res.redirect("/admin/products")
+          })
+      }
+      ```
+
+  * Write
+
+    * /controllers/admin/admin.ctrl.js
+
+      ```javascript
+      
+      exports.get_products = ( _ , res) => {
+        models.Products.findAll({}).then(products=>{
+              res.render('admin/products.html', {products:products})
+          })
+      }
+      ```
+
+    * template/admin/products.html
+
+      ```html
+       {% for product in products %}
+              <tr>
+                  <td>{{ product.name }}</td>
+                  <td>
+                      {{ product.createdAt }}
+                  </td>
+              </tr>
+      {% endfor %}
+      ```
+
+      

@@ -48,6 +48,9 @@ class App {
         })
         .then(() => {
             console.log('DB Sync complete.');
+
+            // javascript 로 작성한 model을 database와 sync
+            // return db.sequelize.sync()
         })
         .catch(err => {
             console.error('Unable to connect to the database:', err);
