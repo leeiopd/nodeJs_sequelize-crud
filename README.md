@@ -79,7 +79,7 @@
 
 * DB write/read
 
-  * Read
+  * Read-List
 
     * /controllers/admin/admin.ctrl.js
 
@@ -88,19 +88,6 @@
           // res.send(req.body);  
         models.Products.create(req.body).then(()=>{
               res.redirect("/admin/products")
-          })
-      }
-      ```
-
-  * Write
-
-    * /controllers/admin/admin.ctrl.js
-
-      ```javascript
-      
-      exports.get_products = ( _ , res) => {
-        models.Products.findAll({}).then(products=>{
-              res.render('admin/products.html', {products:products})
           })
       }
       ```
@@ -118,4 +105,125 @@
       {% endfor %}
       ```
 
+
+  * Write
+
+    * /controllers/admin/admin.ctrl.js
+
+      ```javascript
       
+      exports.get_products = ( _ , res) => {
+        models.Products.findAll({}).then(products=>{
+              res.render('admin/products.html', {products:products})
+          })
+      }
+      ```
+
+  * Read-Detail
+
+    * /controllers/admin/admin.ctrl.js
+
+      ```javascript
+      exports.get_products_detail = ( req , res) => {
+          models.Products.findByPk(req.params.id).then((product)=>{
+               res.render( 'admin/detail.html', {product});
+          })
+      }
+      ```
+
+    * /template/admin/detail.html
+
+      ```html
+      <div class="panel panel-default">
+              <div class="panel-heading">
+                  {{ product.name }}
+              </div>
+              <div class="panel-body">
+                  <div style="padding-bottom: 10px">
+                      작성일 : {{ product.dateFormat( product.createdAt ) }}
+                  </div>
+      
+                  {{ product.description }}
+      
+              </div>
+      </div>
+      ```
+
+* Update
+
+
+  * /controllers/admin/admin.ctrl.js
+
+    ```javascript
+    exports.get_products_edit = ( req , res) => {
+        models.Products.findByPk(req.params.id).then((product)=>{
+             res.render( 'admin/write.html', {product});
+        })
+    }
+    
+    exports.post_products_edit = ( req , res) => {
+        models.Products.update({
+            name:req.body.name,
+            price:req.body.price,
+            description:req.body.description,
+        },
+        {
+            where:{
+                id:req.params.id
+        }}).then(()=>{
+            res.redirect('/admin/products/detail/'+req.params.id)
+        })
+    }
+    ```
+
+  * /template/admin/detail.html
+
+    ```html
+    <form action="" method="post">
+        <table class="table table-bordered">
+            <tr>
+                <th>제품명</th>
+                <td><input type="text" name="name" class="form-control" value="{{product.name}}"/></td>
+            </tr>
+            <tr>
+                <th>가격</th>
+                <td><input type="text" name="price" class="form-control" value="{{product.price}}"/></td>
+            </tr>
+            <tr>
+                <th>설명</th>
+                <td><input type="text" name="description" class="form-control" value="{{product.price}}"/></td>
+                </tr>
+        </table>
+        <button class="btn btn-primary">작성하기</button>
+    </form>
+    ```
+
+    * value 값을 이용하여 write 페이지 재 사용
+
+* Delete
+
+  * /controllers/admin/admin.ctrl.js
+
+    ```javascript
+    exports.get_products_delete = ( req , res) => {
+        models.Products.destroy({where:{id:req.params.id}}).then(()=>{
+             res.redirect( '/admin/products/');
+        })
+    }
+    ```
+
+* CRUD 정리
+
+  ```
+  insert -> models.테이블명.create(데이터)
+  
+  select -> models.테이블명.findAll(조회조건)
+            models.테이블명.findByPk(primary key)
+            models.테이블명.findOne(조회조건)
+            
+  update -> models.테이블명.update(데이터, 조회조건)
+  
+  delete -> models.테이블명.destroy(조회조건)
+  ```
+
+  
